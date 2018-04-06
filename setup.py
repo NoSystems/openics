@@ -40,7 +40,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1.0',  # Required
+    version='0.1.4',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -114,7 +114,8 @@ setup(
     # project page. What does your project relate to?
     #
     # Note that this is a string of words separated by whitespace, not a list.
-    keywords='openics, machine learning, vision, ai, icreativefactor, adafactor, icreativesystem',  # Optional
+    keywords='openics, machine learning, vision, ai, \
+    icreativefactor, adafactor, icreativesystem, open_ics',  # Optional
 
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
@@ -133,8 +134,8 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['peppercorn'],  # Optional
-
+    install_requires=['numpy', 'opencv-python'],  # Optional
+    python_requires='>=3',
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
     # syntax, for example:
@@ -162,7 +163,7 @@ setup(
     # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
     #
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    data_files=[(['data/drone_360p.mp4'])],  # Optional
+    # data_files=[('my_data', ['data/drone_360p.mp4'])],  # Optional
 
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
@@ -171,11 +172,11 @@ setup(
     #
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
-    # entry_points={  # Optional
-    #     'console_scripts': [
-    #         'sample=sample:main',
-    #     ],
-    # },
+    entry_points={  # Optional
+        'console_scripts': [
+            'openics=openics:main',
+        ],
+    },
 
     # List additional URLs that are relevant to your project as a dict.
     #
@@ -188,8 +189,6 @@ setup(
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
         'Bug Reports': 'https://github.com/iCreativeFactor/openics/issues',
-        # 'Funding': 'https://donate.pypi.org',
-        # 'Say Thanks!': 'http://saythanks.io/to/example',
         'Source': 'https://github.com/iCreativeFactor/openics',
     },
 )
