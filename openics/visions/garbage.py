@@ -111,7 +111,16 @@ def nearest_object(frame_data, edge_threshold=600, center_position='center'):
     return frame, target_centroid,
 
 
-def integration(is_open_file=True, edge_threshold=600):
+def get_centroid(point=(0, 0)):
+    """
+        Default callback function for find_object
+        it does prints centroid that have got
+        from nearest_object.
+    """
+    print('Centroid is {}'.format(point))
+
+
+def find_object(is_open_file=False, edge_threshold=600, callback=get_centroid):
     """
         Integrate functions to find nearest object and show displays
     """
@@ -128,7 +137,7 @@ def integration(is_open_file=True, edge_threshold=600):
                 edge_threshold=edge_threshold
             )
             cv2.imshow('Detection', frame)
-
+        callback(centroid)
         # QUIT KEYS
         if cv2.waitKey(36) & 0xFF == ord('q'):
             break
