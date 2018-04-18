@@ -1,73 +1,10 @@
 import numpy as np
 import cv2
-import time
-import os
-
-from pathlib import Path
-
-# Path Configuration
-
+from openics.core import math, camera
 
 # Window Configuration
 cv2.namedWindow('Detection', cv2.WINDOW_AUTOSIZE)
 cv2.moveWindow('Detection', 800, 50)
-
-# cv2.namedWindow('Binarization', cv2.WINDOW_AUTOSIZE)
-# cv2.moveWindow('Binarization', 50, 50)
-
-
-def drone_data():
-    DATA_DIR = Path(Path(__file__).resolve()).parents[2]/'data'
-    data = str(DATA_DIR/'drone_360p.mp4')
-    return data
-
-
-def open_cam(video_capture=0, open_file=False, file=None):
-    # FROM FILE
-    if open_file:
-        if file is None:
-            print('File path: None')
-        cap = cv2.VideoCapture(file)
-        print('Processing file:', file)
-    else:
-        # FROM CAMERA
-        cap = cv2.VideoCapture(0)
-
-    #  Check is opening
-    if cap.isOpened() is False:
-        print('Error opening video straming or file')
-    else:
-        return cap
-
-
-def distance(p0, p1, mode='euclid'):
-    x0, x1 = p0[0], p1[0]
-    y0, y1 = p0[1], p1[1]
-
-    formula = {
-        'euclid': np.sqrt(np.power(x0-x1, 2) + np.power(y0-y1, 2)),
-        'city_block': np.abs(x0-x1) + np.abs(y0-y1),
-    }
-
-    if mode not in formula:
-        mode = 'euclid'
-
-    return formula[mode].astype(np.float)
-
-
-def object_centroid(points):
-    px, py = 0, 0
-    num_points = len(points)
-    for p in points:
-        p = p[0]
-        px += p[0]
-        py += p[1]
-    centroid = (
-        int(px/num_points),
-        int(py/num_points)
-    )
-
-    return centroid
 
 
 def nearest_object(frame_data, edge_threshold=600, center_position='center'):
@@ -110,8 +47,8 @@ def nearest_object(frame_data, edge_threshold=600, center_position='center'):
     # Draw line from frame center to object centroid
     centroid_set, radius_set = [], []
     for points in contours:
-        centroid = object_centroid(points)
-        radius = distance(frame_center, centroid, mode='euclid')
+        centroid = math.centroid(points)
+        radius = math.distance(frame_center, centroid, mode='euclid')
         centroid_set.append(centroid)
         radius_set.append(radius)
 
@@ -127,11 +64,25 @@ def nearest_object(frame_data, edge_threshold=600, center_position='center'):
     return frame, target_centroid,
 
 
-def integration(is_open_file=True, edge_threshold=600):
+def callback(**kwargs):
     """
-        Integrate functions to find nearest object and show displays
+        Default callback function for find_object
+        it does prints centroid that have got
+        from nearest_object.
     """
-    cap = open_cam(open_file=is_open_file, file=drone_data())
+    for key in kwargs:
+        print('{} is {}'.format(key, kwargs[key]))
+
+
+def find_object(is_open_file=False, edge_threshold=600, callback=callback):
+    """
+        Integrate functions to find nearest object and show on displays
+        is_open_file -> Choose to open from file or camera
+        edge_threshold -> Sharp of edge
+        callback(cantroid, frame) -> Function that user can write by
+        themselves for handle centroid and frame
+    """
+    cap = camera.open_cam(open_file=is_open_file, file='')
 
     while cap.isOpened():
         # READ VIDEO FRAME
@@ -144,6 +95,8 @@ def integration(is_open_file=True, edge_threshold=600):
                 edge_threshold=edge_threshold
             )
             cv2.imshow('Detection', frame)
+        # Callback function for customized by user
+        callback(cantroid=centroid, frame=frame)
 
         # QUIT KEYS
         if cv2.waitKey(36) & 0xFF == ord('q'):
@@ -151,11 +104,3 @@ def integration(is_open_file=True, edge_threshold=600):
 
     cap.release()
     cv2.destroyAllWindows()
-
-
-def main():
-    integration(False, edge_threshold=200)
-
-
-if __name__ == '__main__':
-    main()
