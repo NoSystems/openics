@@ -1,25 +1,9 @@
 import numpy as np
 import cv2
-import time
-import os
-
-from pathlib import Path
-
-# Path Configuration
-
 
 # Window Configuration
 cv2.namedWindow('Detection', cv2.WINDOW_AUTOSIZE)
 cv2.moveWindow('Detection', 800, 50)
-
-# cv2.namedWindow('Binarization', cv2.WINDOW_AUTOSIZE)
-# cv2.moveWindow('Binarization', 50, 50)
-
-
-def drone_data():
-    DATA_DIR = Path(Path(__file__).resolve()).parents[2]/'data'
-    data = str(DATA_DIR/'drone_360p.mp4')
-    return data
 
 
 def open_cam(video_capture=0, open_file=False, file=None):
@@ -131,7 +115,7 @@ def integration(is_open_file=True, edge_threshold=600):
     """
         Integrate functions to find nearest object and show displays
     """
-    cap = open_cam(open_file=is_open_file, file=drone_data())
+    cap = open_cam(open_file=is_open_file, file='')
 
     while cap.isOpened():
         # READ VIDEO FRAME
@@ -151,11 +135,3 @@ def integration(is_open_file=True, edge_threshold=600):
 
     cap.release()
     cv2.destroyAllWindows()
-
-
-def main():
-    integration(False, edge_threshold=200)
-
-
-if __name__ == '__main__':
-    main()
