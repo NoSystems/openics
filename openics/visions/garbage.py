@@ -96,7 +96,7 @@ def find_object(is_open_file=False, edge_threshold=600, callback=callback):
             )
             cv2.imshow('Detection', frame)
         # Callback function for customized by user
-        callback(cantroid=centroid, frame=frame)
+        callback(centroid=centroid, frame=frame)
 
         # QUIT KEYS
         if cv2.waitKey(36) & 0xFF == ord('q'):
