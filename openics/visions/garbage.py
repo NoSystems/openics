@@ -1,57 +1,10 @@
 import numpy as np
 import cv2
+from openics.core import math, camera
 
 # Window Configuration
 cv2.namedWindow('Detection', cv2.WINDOW_AUTOSIZE)
 cv2.moveWindow('Detection', 800, 50)
-
-
-def open_cam(video_capture=0, open_file=False, file=None):
-    # FROM FILE
-    if open_file:
-        if file is None:
-            print('File path: None')
-        cap = cv2.VideoCapture(file)
-        print('Processing file:', file)
-    else:
-        # FROM CAMERA
-        cap = cv2.VideoCapture(0)
-
-    #  Check is opening
-    if cap.isOpened() is False:
-        print('Error opening video straming or file')
-    else:
-        return cap
-
-
-def distance(p0, p1, mode='euclid'):
-    x0, x1 = p0[0], p1[0]
-    y0, y1 = p0[1], p1[1]
-
-    formula = {
-        'euclid': np.sqrt(np.power(x0-x1, 2) + np.power(y0-y1, 2)),
-        'city_block': np.abs(x0-x1) + np.abs(y0-y1),
-    }
-
-    if mode not in formula:
-        mode = 'euclid'
-
-    return formula[mode].astype(np.float)
-
-
-def object_centroid(points):
-    px, py = 0, 0
-    num_points = len(points)
-    for p in points:
-        p = p[0]
-        px += p[0]
-        py += p[1]
-    centroid = (
-        int(px/num_points),
-        int(py/num_points)
-    )
-
-    return centroid
 
 
 def nearest_object(frame_data, edge_threshold=600, center_position='center'):
@@ -94,8 +47,8 @@ def nearest_object(frame_data, edge_threshold=600, center_position='center'):
     # Draw line from frame center to object centroid
     centroid_set, radius_set = [], []
     for points in contours:
-        centroid = object_centroid(points)
-        radius = distance(frame_center, centroid, mode='euclid')
+        centroid = math.centroid(points)
+        radius = math.distance(frame_center, centroid, mode='euclid')
         centroid_set.append(centroid)
         radius_set.append(radius)
 
@@ -111,20 +64,25 @@ def nearest_object(frame_data, edge_threshold=600, center_position='center'):
     return frame, target_centroid,
 
 
-def get_centroid(point=(0, 0)):
+def callback(**kwargs):
     """
         Default callback function for find_object
         it does prints centroid that have got
         from nearest_object.
     """
-    print('Centroid is {}'.format(point))
+    for key in kwargs:
+        print('{} is {}'.format(key, kwargs[key]))
 
 
-def find_object(is_open_file=False, edge_threshold=600, callback=get_centroid):
+def find_object(is_open_file=False, edge_threshold=600, callback=callback):
     """
-        Integrate functions to find nearest object and show displays
+        Integrate functions to find nearest object and show on displays
+        is_open_file -> Choose to open from file or camera
+        edge_threshold -> Sharp of edge
+        callback(cantroid, frame) -> Function that user can write by
+        themselves for handle centroid and frame
     """
-    cap = open_cam(open_file=is_open_file, file='')
+    cap = camera.open_cam(open_file=is_open_file, file='')
 
     while cap.isOpened():
         # READ VIDEO FRAME
@@ -137,7 +95,9 @@ def find_object(is_open_file=False, edge_threshold=600, callback=get_centroid):
                 edge_threshold=edge_threshold
             )
             cv2.imshow('Detection', frame)
-        callback(centroid)
+        # Callback function for customized by user
+        callback(cantroid=centroid, frame=frame)
+
         # QUIT KEYS
         if cv2.waitKey(36) & 0xFF == ord('q'):
             break
