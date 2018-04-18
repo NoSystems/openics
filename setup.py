@@ -22,7 +22,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='openics',  # Required
-    version='0.1.5-dev',  # Required
+    version='0.1.5',  # Required
     # Required
     description='iCreativeFactor\'s library for autonomous system.',
     long_description=long_description,  # Optional
@@ -49,11 +49,11 @@ setup(
         'dev': ['check-manifest'],
         'test': ['coverage'],
     },
-    entry_points={  # Optional
-        'console_scripts': [
-            'openics=openics:main',
-        ],
-    },
+    # entry_points={  # Optional
+    #     'console_scripts': [
+    #         'openics=openics:main',
+    #     ],
+    # },
     project_urls={  # Optional
         'Bug Reports': 'https://github.com/iCreativeFactor/openics/issues',
         'Source': 'https://github.com/iCreativeFactor/openics',
