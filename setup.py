@@ -22,7 +22,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='openics',  # Required
-    version='0.1.5.1',  # Required
+    version='0.1.6.1',  # Required
     # Required
     description='iCreativeFactor\'s library for autonomous system.',
     long_description=long_description,  # Optional
@@ -35,6 +35,7 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
@@ -44,7 +45,7 @@ setup(
     icreativefactor, adafactor, icreativesystem, open_ics',  # Optional
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
     install_requires=['numpy', 'opencv-python'],  # Optional
-    python_requires='>=3',
+    python_requires='>=2.7',
     extras_require={  # Optional
         'dev': ['check-manifest'],
         'test': ['coverage'],
