@@ -22,7 +22,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='openics',  # Required
-    version='0.1.6.1',  # Required
+    version='0.1.6.2',  # Required
     # Required
     description='iCreativeFactor\'s library for autonomous system.',
     long_description=long_description,  # Optional
