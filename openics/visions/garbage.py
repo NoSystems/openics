@@ -58,8 +58,18 @@ def nearest_object(frame_data, edge_threshold=600, center_position='center'):
     else:
         min_distance_index = 0
         target_centroid = (frame_center)
+
     cv2.line(frame, frame_center, target_centroid, (255, 0, 0), 2)
-    cv2.circle(frame, target_centroid, 5, (0, 0, 255), -1)
+    cv2.circle(frame, target_centroid, 3, (0, 0, 255), -1)
+    
+    d = len(points)%60
+    cv2.rectangle(
+        frame,
+        (target_centroid[0]-d, target_centroid[1]-d),
+        (target_centroid[0]+d, target_centroid[1]+d),
+        (0, 255, 0),
+        2
+       )
 
     return frame, target_centroid,
 
@@ -74,7 +84,7 @@ def callback(**kwargs):
         print('{} is {}'.format(key, kwargs[key]))
 
 
-def find_object(is_open_file=False, edge_threshold=600, callback=callback):
+def find_object(is_open_file=False, file='', edge_threshold=600, is_record=False, callback=callback):
     """
         Integrate functions to find nearest object and show on displays
         is_open_file -> Choose to open from file or camera
@@ -82,7 +92,12 @@ def find_object(is_open_file=False, edge_threshold=600, callback=callback):
         callback(cantroid, frame) -> Function that user can write by
         themselves for handle centroid and frame
     """
-    cap = camera.open_cam(open_file=is_open_file, file='')
+    cap = camera.open_cam(open_file=is_open_file, file=file)
+    size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+        int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    fourcc = cv2.VideoWriter_fourcc(*'mpeg')
+    out = cv2.VideoWriter()
+    out.open('output.mp4', fourcc, 20.0, size, True)
 
     while cap.isOpened():
         # READ VIDEO FRAME
@@ -94,13 +109,25 @@ def find_object(is_open_file=False, edge_threshold=600, callback=callback):
                 center_position='bottom',
                 edge_threshold=edge_threshold
             )
+
+            if is_record:
+                out.write(frame)
+
             cv2.imshow('Detection', frame)
         # Callback function for customized by user
         callback(centroid=centroid, frame=frame)
 
         # QUIT KEYS
         if cv2.waitKey(36) & 0xFF == ord('q'):
+            cap.release()
+            out.release()
+            break
+        if frame is None:
             break
 
     cap.release()
+    out.release()
     cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    print('Garbage')
